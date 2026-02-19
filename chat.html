@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Real-Time Chat</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f4f4f9; display: flex; justify-content: center; padding: 20px; }
+        .chat-container { background: white; width: 400px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); display: flex; flex-direction: column; height: 500px; }
+        #messages { flex-grow: 1; overflow-y: auto; padding: 15px; list-style: none; margin: 0; border-bottom: 1px solid #ddd; }
+        .input-area { padding: 10px; display: flex; }
+        input { flex-grow: 1; padding: 10px; border: 1px solid #ddd; border-radius: 4px; }
+        button { margin-left: 10px; padding: 10px 15px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <h3 style="text-align: center;">Chat Room</h3>
+        <ul id="messages"></ul>
+        <div class="input-area">
+            <input type="text" id="messageText" placeholder="Type a message..." autocomplete="off">
+            <button onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+
+    <script>
+        // Use sushma as the ID for testing
+       // This pops up a box to ask for the name instead of always using 'sushma'
+const username = prompt("What is your name?") || "Guest";
+
+// This connects to the server using the name you just typed
+const ws = new WebSocket(`ws://127.0.0.1:8000/ws/${username}`);
+        ws.onmessage = function(event) {
+            const messages = document.getElementById('messages');
+            const message = document.createElement('li');
+            message.textContent = event.data;
+            messages.appendChild(message);
+            messages.scrollTop = messages.scrollHeight; 
+        };
+
+        function sendMessage() {
+            const input = document.getElementById("messageText");
+            if (input.value) {
+                ws.send(input.value);
+                input.value = '';
+            }
+        }
+    </script>
+</body>
+</html>
